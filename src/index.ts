@@ -27,7 +27,7 @@ export default function scriptPushPlugin( options: Partial<ScriptPushPluginOptio
 	
 	return {
 		name: 'vite-plugin-scriptcat-script-push',
-		version: '1.0.0',
+		version: '1.1.0',
 		
 		writeBundle( option, bundle ) {
 			// ws 服务器不存在, 不处理
@@ -44,13 +44,16 @@ export default function scriptPushPlugin( options: Partial<ScriptPushPluginOptio
 				
 				const dir = option.dir || join( __dirname, 'dist' );
 				const filepath = join( dir, fileName );
-				wsServer.broadcast( {
-					action: 'onchange',
-					data: {
-						script: chunk.code,
-						uri: pathToFileURL( filepath ).href,
-					},
-				} );
+				const fileUri = pathToFileURL( filepath ).href;
+				
+				// ws 服务器存在, 没有客户端连接, 缓存脚本内容
+				if ( !wsServer.hasClient() ) {
+					wsServer.cacheScript( chunk.code, fileUri );
+					return;
+				}
+				
+				// 广播脚本内容
+				wsServer.broadcastScript( chunk.code, fileUri );
 			}
 		},
 	};

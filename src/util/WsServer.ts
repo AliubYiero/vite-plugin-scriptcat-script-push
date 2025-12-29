@@ -19,7 +19,18 @@ export class WsServer {
 	 */
 	private wss: WebSocketServer | null = null;
 	
+	
 	constructor( private port: number = 8642 ) {}
+	
+	private cacheScriptList: WsServerBroadcastMessage['data'][] = [];
+	
+	/**
+	 * 在 ws 客户端未连接的情况下缓存脚本推送
+	 */
+	cacheScript( script: string, uri: string ) {
+		this.cacheScriptList.push( { script, uri } );
+		console.info( `[ScriptCat] cache script:`, uri );
+	}
 	
 	/**
 	 * 广播
@@ -36,6 +47,13 @@ export class WsServer {
 	}
 	
 	/**
+	 * 广播脚本内容
+	 */
+	broadcastScript( script: string, uri: string ) {
+		this.broadcast( { action: 'onchange', data: { script, uri } } );
+	}
+	
+	/**
 	 * 创建 ws 服务器
 	 */
 	create() {
@@ -45,6 +63,12 @@ export class WsServer {
 			this.wss.on( 'connection', ( ws ) => {
 				this.clients.add( ws );
 				console.info( `[ScriptCat] client-${ this.clients.size } connected` );
+				
+				// 广播缓存脚本内容
+				this.cacheScriptList.forEach( ( { script, uri } ) => {
+					this.broadcastScript( script, uri );
+				} );
+				this.cacheScriptList = [];
 				
 				ws.on( 'close', () => this.clients.delete( ws ) );
 				ws.on( 'error', console.error );
@@ -77,5 +101,12 @@ export class WsServer {
 	 */
 	hasServer(): boolean {
 		return Boolean( this.wss );
+	}
+	
+	/**
+	 * 检查是否存在 client 连接
+	 */
+	hasClient(): boolean {
+		return this.clients.size > 0;
 	}
 }

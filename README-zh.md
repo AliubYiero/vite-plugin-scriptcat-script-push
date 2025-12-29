@@ -93,12 +93,26 @@ watching for file changes...
 [ScriptCat] WS server started on port 8642
 ```
 
-2. 按照 [连接服务器](#连接服务器) 的步骤，连接 ws 服务器。
+> 同时, 将已经打包完成的脚本进行缓存, 等待客户端连接. 
+
+```bash
+build started...
+✓ 1 modules transformed.
+[ScriptCat] cache script: <本地文件地址>
+```
+
+2. 按照 [连接服务器](#连接服务器) 的步骤，连接 ws 客户端。
 
 > 如果脚本猫连接 ws 服务器成功，会在终端提示: 
 
 ```bash
  [ScriptCat] client-1 connected
+```
+
+> 同时, 将缓存的脚本推送到连接的客户端. 
+
+```bash
+[ScriptCat] broadcast to client-1: <本地文件地址>
 ```
 
 3. 当你修改脚本源文件时，触发 vite 重建流程，插件将自动将打包完成的脚本推送到所有已连接的客户端。

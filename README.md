@@ -4,9 +4,9 @@ English / [中文](./README-zh.md)
 
 ## Features
 
-Automatically push rebuilt JavaScript bundles to the ScriptCat extension via WebSocket during development. Enables instant script updates without manual reloading or reinstallation.
+Automatically pushes rebuilt JavaScript bundles to the ScriptCat extension via WebSocket during development. Enables instant script updates without manual reloading or reinstallation.
 
-> The updated script still requires refreshing the page to be reloaded into the page.
+> Updated scripts still require a page refresh to be reloaded into the page.
 
 ## Installation
 
@@ -20,18 +20,18 @@ pnpm add @yiero/vite-plugin-scriptcat-script-push -D
 
 ## Configuration
 
-| Parameter | Type     | Description                                    | Default   |
-| --------- | -------- | ---------------------------------------------- | --------- |
-| `port`    | `number` | Port number for the WebSocket server           | `8642`    |
-| `match`   | `RegExp` | Regular expression to match files to broadcast | `/\.js$/` |
+| Parameter | Type     | Description                                   | Default   |
+| --------- | -------- | --------------------------------------------- | --------- |
+| `port`    | `number` | Port number for the WebSocket server          | `8642`    |
+| `match`   | `RegExp` | Regex pattern to match files for broadcasting | `/\.js$/` |
 
 ## Usage
 
-> **Note**: Only one ws server can be running at a time.
+> **Note**: Only one WS server can be active at a time.
 
-### Install the plugin
+### Install the Plugin
 
-Add the plugin in `vite.config.js` / `vite.config.ts`:
+Add the plugin to `vite.config.js` / `vite.config.ts`:
 
 **Basic Usage**
 
@@ -42,8 +42,8 @@ import scriptPushPlugin from '@yiero/vite-plugin-scriptcat-script-push'
 export default defineConfig({
   plugins: [
     // Other plugins...
-    
-    // Automatically push rebuilt scripts to ScriptCat
+
+    // Automatically pushes rebuilt scripts to ScriptCat
     scriptPushPlugin()
   ],
 })
@@ -70,40 +70,54 @@ export default defineConfig({
 
 ---
 
-### Connect to the server
+### Connect to the Server
 
-1. Open *Browser* - ScriptCat *Script List* interface
-2. Click the *Tools* menu on the left
-3. Find the *Development Debugging* section
-4. Find *VSCode URL*, click the ***Connect*** button below
-5. If using a custom port, modify the value of `ws://localhost:8642` to the corresponding port number: `ws://localhost:<port>`.
+1. Open the ScriptCat *Script List* interface in your *browser*.
+2. Click the *Tools* menu on the left.
+3. Find the *Development Debugging* section.
+4. Locate *VSCode Address* and click the ***Connect*** button below it.
+5. If using a custom port, modify the `ws://localhost:8642` value to your port: `ws://localhost:<port>`.
 
 ![image-20251214021257327](./iamges_README/image-20251214023949704.png)
 
 ---
 
-### Develop the script
+### Develop Scripts
 
-1. Build the script in `watch` mode: `vite build --watch`.
+1. Build your script in `watch` mode: `vite build --watch`.
 
-> If the script is successfully installed, it will show that the ws server has started below `watching for file changes...`:
+> If the script is successfully installed, the WS server start message will appear below `watching for file changes...`:
 
 ```bash
 watching for file changes...
 [ScriptCat] WS server started on port 8642
 ```
 
-2. Follow the steps in [Connect to the server](#connect-to-the-server) to connect to the ws server.
+> Simultaneously, the built script is cached, waiting for client connections.
 
-> If ScriptCat successfully connects to the ws server, it will show in the terminal:
+```bash
+build started...
+✓ 1 modules transformed.
+[ScriptCat] cache script: <local file path>
+```
+
+2. Follow the steps in [Connect to the Server](#connect-to-the-server) to connect the WS client.
+
+> If ScriptCat successfully connects to the WS server, the terminal will show:
 
 ```bash
 [ScriptCat] client-1 connected
 ```
 
-3. When you modify the script source file, triggering the vite rebuild process, the plugin will automatically push the completed bundled script to all connected clients.
+> Simultaneously, the cached script is pushed to the connected client.
 
-> If the script broadcast is successful, it will show in the terminal:
+```bash
+[ScriptCat] broadcast to client-1: <local file path>
+```
+
+3. When you modify the script source files, triggering the Vite rebuild process, the plugin will automatically push the newly bundled script to all connected clients.
+
+> If the script is broadcast successfully, the terminal will show:
 
 ```bash
 [ScriptCat] broadcast to client-1: <local file path>
@@ -113,16 +127,16 @@ watching for file changes...
 
 The plugin automatically performs the following operations:
 
-1. Creates a WebSocket server on the specified port during Vite build
-2. Checks if the port is available before starting the server
-3. Maintains connections with all active clients
-4. When Vite rebuilds and writes the bundle:
-   - Filters files based on the matching pattern
-   - Converts file paths to the correct URL
-   - Broadcasts the updated script content to all connected clients
-5. Sends a ping message every 30 seconds to keep the connection alive
+1. Creates a WebSocket server on the specified port during the Vite build process.
+2. Checks if the port is available before starting the server.
+3. Maintains connections with all active clients.
+4. When Vite rebuilds and writes a bundle:
+   - Filters files based on the match pattern.
+   - Converts file paths to correct URLs.
+   - Broadcasts the updated script content to all connected clients.
+5. Sends a ping message every 30 seconds to keep connections alive.
 
-## Contribution Guide
+## Contributing
 
 Please submit issues or PRs via [GitHub](https://github.com/AliubYiero/vite-plugin-scriptcat-script-push).
 
