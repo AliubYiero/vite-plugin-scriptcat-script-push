@@ -17,7 +17,7 @@ export default function scriptPushPlugin( options: Partial<ScriptPushPluginOptio
 	wsServer.isPortInUse().then( ( isPortInUse ) => {
 		// 端口被占用, 不启动
 		if ( isPortInUse ) {
-			console.warn( `[ScriptCat] Port ${ serverPort } unavailable` );
+			console.warn( `\x1b[33m[ScriptCat] Port ${ serverPort } unavailable\x1b[0m` );
 			return;
 		}
 		
@@ -49,7 +49,7 @@ export default function scriptPushPlugin( options: Partial<ScriptPushPluginOptio
 				// ws 服务器存在, 没有客户端连接, 缓存脚本内容
 				if ( !wsServer.hasClient() ) {
 					wsServer.cacheScript( chunk.code, fileUri );
-					return;
+					continue;
 				}
 				
 				// 广播脚本内容

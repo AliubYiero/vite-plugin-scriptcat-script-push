@@ -1,7 +1,7 @@
 {
 	"name": "@yiero/vite-plugin-scriptcat-script-push",
 	"description": "A vite plugin to push ScriptCat scripts to browsers using ScriptCat extension.",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"type": "module",
 	"exports": {
 		".": {

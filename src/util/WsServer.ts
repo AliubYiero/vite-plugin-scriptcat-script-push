@@ -22,13 +22,13 @@ export class WsServer {
 	
 	constructor( private port: number = 8642 ) {}
 	
-	private cacheScriptList: WsServerBroadcastMessage['data'][] = [];
+	private cacheScripts: Map<string, string> = new Map();
 	
 	/**
 	 * 在 ws 客户端未连接的情况下缓存脚本推送
 	 */
 	cacheScript( script: string, uri: string ) {
-		this.cacheScriptList.push( { script, uri } );
+		this.cacheScripts.set( uri, script );
 		console.info( `[ScriptCat] cache script:`, uri );
 	}
 	
@@ -64,11 +64,10 @@ export class WsServer {
 				this.clients.add( ws );
 				console.info( `[ScriptCat] client-${ this.clients.size } connected` );
 				
-				// 广播缓存脚本内容
-				this.cacheScriptList.forEach( ( { script, uri } ) => {
+				// 广播所有缓存脚本内容
+				this.cacheScripts.forEach( ( script, uri ) => {
 					this.broadcastScript( script, uri );
 				} );
-				this.cacheScriptList = [];
 				
 				ws.on( 'close', () => this.clients.delete( ws ) );
 				ws.on( 'error', console.error );
@@ -85,7 +84,7 @@ export class WsServer {
 			}, 30_000 );
 		}
 		catch ( error ) {
-			console.warn( `[ScriptCat] Port ${ this.port } unavailable` );
+			console.warn( `\x1b[33m[ScriptCat] Port ${ this.port } unavailable\x1b[0m` );
 		}
 	}
 	

@@ -130,11 +130,16 @@ The plugin automatically performs the following operations:
 1. Creates a WebSocket server on the specified port during the Vite build process.
 2. Checks if the port is available before starting the server.
 3. Maintains connections with all active clients.
-4. When Vite rebuilds and writes a bundle:
+4. Script caching mechanism:
+   - Caches all matched scripts with `{uri: script}` structure.
+   - Caching persists throughout the WebSocket server lifetime.
+   - When no client is connected, scripts are cached without broadcasting.
+   - When a client connects, all cached scripts are broadcast to that client.
+5. When Vite rebuilds and writes a bundle:
    - Filters files based on the match pattern.
    - Converts file paths to correct URLs.
-   - Broadcasts the updated script content to all connected clients.
-5. Sends a ping message every 30 seconds to keep connections alive.
+   - Broadcasts the updated script content to all connected clients (or caches if no client).
+6. Sends a ping message every 30 seconds to keep connections alive.
 
 ## Contributing
 
